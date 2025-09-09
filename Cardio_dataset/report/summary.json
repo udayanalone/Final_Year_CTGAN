@@ -1,0 +1,89 @@
+{
+  "generated_at": "2025-09-09T19:49:19",
+  "models": [
+    {
+      "model": "ctgan",
+      "run_dir": "old_tech\\output\\ctgan\\20250909_194045",
+      "result": {
+        "status": "failed",
+        "reason": "Missing dependency or import error: No module named 'sdv.tabular'"
+      }
+    },
+    {
+      "model": "ctgan",
+      "run_dir": "old_tech\\output\\ctgan\\20250909_194359",
+      "result": {
+        "status": "failed",
+        "reason": "Missing dependency or import error: No module named 'sdv.tabular'"
+      }
+    },
+    {
+      "model": "ctgan",
+      "run_dir": "old_tech\\output\\ctgan\\20250909_194558",
+      "result": {
+        "status": "failed",
+        "reason": "Missing dependency or import error: No module named 'sdv.tabular'"
+      }
+    },
+    {
+      "model": "CTGAN",
+      "run_dir": "old_tech\\output\\ctgan\\20250909_194751",
+      "num_real_rows": 70000,
+      "num_synth_rows": 1000,
+      "columns": [
+        "id;age;gender;height;weight;ap_hi;ap_lo;cholesterol;gluc;smoke;alco;active;cardio"
+      ],
+      "run_id": "20250909_194751",
+      "result": {
+        "status": "success",
+        "run_dir": "old_tech\\output\\ctgan\\20250909_194751"
+      }
+    },
+    {
+      "model": "CTGAN",
+      "run_dir": "old_tech\\output\\ctgan\\20250909_194811",
+      "num_real_rows": 70000,
+      "num_synth_rows": 1000,
+      "columns": [
+        "id;age;gender;height;weight;ap_hi;ap_lo;cholesterol;gluc;smoke;alco;active;cardio"
+      ],
+      "run_id": "20250909_194811",
+      "result": {
+        "status": "success",
+        "run_dir": "old_tech\\output\\ctgan\\20250909_194811"
+      }
+    },
+    {
+      "model": "DP-CTGAN",
+      "run_dir": "old_tech\\output\\dp_ctgan\\20250909_194832",
+      "num_real_rows": 70000,
+      "num_synth_rows": 1000,
+      "columns": [
+        "id;age;gender;height;weight;ap_hi;ap_lo;cholesterol;gluc;smoke;alco;active;cardio"
+      ],
+      "run_id": "20250909_194832",
+      "epsilon": 1.0,
+      "note": "This is a placeholder using CTGANSynthesizer without DP guarantees.",
+      "result": {
+        "status": "success",
+        "run_dir": "old_tech\\output\\dp_ctgan\\20250909_194832"
+      }
+    },
+    {
+      "model": "PATE-CTGAN",
+      "run_dir": "old_tech\\output\\pate_ctgan\\20250909_194905",
+      "num_real_rows": 70000,
+      "num_synth_rows": 1000,
+      "columns": [
+        "id;age;gender;height;weight;ap_hi;ap_lo;cholesterol;gluc;smoke;alco;active;cardio"
+      ],
+      "run_id": "20250909_194905",
+      "teachers": 10,
+      "note": "This is a placeholder using CTGANSynthesizer without PATE guarantees.",
+      "result": {
+        "status": "success",
+        "run_dir": "old_tech\\output\\pate_ctgan\\20250909_194905"
+      }
+    }
+  ]
+}

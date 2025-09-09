@@ -1,0 +1,12 @@
+{
+  "num_real_rows": 70000,
+  "num_synth_rows": 100,
+  "columns": [
+    "id;age;gender;height;weight;ap_hi;ap_lo;cholesterol;gluc;smoke;alco;active;cardio"
+  ],
+  "run_id": "20250909_195423",
+  "model": "DP-CTGAN",
+  "epsilon": 1.0,
+  "note": "This is a placeholder using CTGANSynthesizer without DP guarantees.",
+  "generated_dataset_path": "Generated_dataset\\dp_ctgan\\20250909_195423\\synthetic.csv"
+}

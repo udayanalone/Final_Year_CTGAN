@@ -1,0 +1,11 @@
+{
+  "num_real_rows": 70000,
+  "num_synth_rows": 1000,
+  "columns": [
+    "id;age;gender;height;weight;ap_hi;ap_lo;cholesterol;gluc;smoke;alco;active;cardio"
+  ],
+  "run_id": "20250909_194905",
+  "model": "PATE-CTGAN",
+  "teachers": 10,
+  "note": "This is a placeholder using CTGANSynthesizer without PATE guarantees."
+}

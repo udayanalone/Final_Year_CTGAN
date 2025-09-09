@@ -1,0 +1,60 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environment
+venv/
+env/
+ENV/
+.env
+.venv
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Data files
+*.csv
+!cardio_train_dataset.csv
+!cervical-cancer_csv.csv
+
+# Generated files and directories
+Generated_dataset/**/synthetic.csv
+old_tech/output/**/*.csv
+
+# Logs and temporary files
+*.log
+.DS_Store
+Thumbs.db
+
+# Model files
+*.h5
+*.pkl
+*.model
+
+# Cache
+.cache/
+.pytest_cache/

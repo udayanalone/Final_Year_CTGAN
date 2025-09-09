@@ -1,0 +1,7 @@
+{
+  "data": ".\\cardio_train_dataset.csv",
+  "epochs": 5,
+  "samples": 100,
+  "teachers": 5,
+  "categorical": []
+}
