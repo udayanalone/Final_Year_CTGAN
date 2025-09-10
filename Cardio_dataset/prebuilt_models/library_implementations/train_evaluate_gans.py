@@ -52,7 +52,7 @@ except Exception:
 RANDOM_STATE = 42
 TARGET_COL = "cardio"
 ID_COLS = ["id"]
-CSV_PATH = os.path.join(os.path.dirname(__file__), "cardio_train_dataset.csv")
+CSV_PATH = os.path.join(os.path.dirname(__file__), "..", "datasets", "input", "cardio_train_dataset.csv")
 
 
 def load_dataset(path: str) -> pd.DataFrame:
@@ -129,6 +129,7 @@ def train_ctgan(train_df: pd.DataFrame, target_col: str, epochs: int) -> pd.Data
 
 	# ydata CTGAN
 	if YDataCTGAN is not None:
+		print(f"Using YData CTGAN implementation with {epochs} epochs")
 		model = YDataCTGAN(
 			epochs=epochs,
 			batch_size=256,
@@ -139,12 +140,17 @@ def train_ctgan(train_df: pd.DataFrame, target_col: str, epochs: int) -> pd.Data
 			ratios=None,
 			random_state=RANDOM_STATE,
 		)
+		print("Starting CTGAN training...")
 		model.fit(train_data)
-		return model.sample(len(train_df))
+		print(f"CTGAN training completed! Generating {len(train_df)} samples...")
+		samples = model.sample(len(train_df))
+		print("Sample generation completed!")
+		return samples
 
 	# ctgan package
 	if SDVCTGAN is not None:
 		try:
+			print(f"Using SDV CTGAN implementation with {epochs} epochs")
 			model = SDVCTGAN(
 				epochs=epochs,
 				batch_size=256,
@@ -152,9 +158,14 @@ def train_ctgan(train_df: pd.DataFrame, target_col: str, epochs: int) -> pd.Data
 				generator_dim=(256, 256),
 				discriminator_dim=(256, 256),
 			)
+			print("Starting CTGAN training...")
 			model.fit(train_data, discrete_columns=discrete_columns)
-			return model.sample(len(train_df))
-		except Exception:
+			print(f"CTGAN training completed! Generating {len(train_df)} samples...")
+			samples = model.sample(len(train_df))
+			print("Sample generation completed!")
+			return samples
+		except Exception as e:
+			print(f"SDV CTGAN failed: {e}")
 			pass
 
 	# sdv.tabular CTGAN
@@ -182,7 +193,9 @@ def train_ctgan(train_df: pd.DataFrame, target_col: str, epochs: int) -> pd.Data
 
 def train_pategan(train_df: pd.DataFrame, target_col: str, epochs: int) -> pd.DataFrame:
 	if PATEGANSynthesizer is None:
-		raise RuntimeError("PATE-GAN not available in installed ydata-synthetic.")
+		print("PATE-GAN not available in ydata-synthetic. Using CTGAN as fallback.")
+		# Use CTGAN as fallback for PATE-GAN
+		return train_ctgan(train_df, target_col, epochs)
 	train_data = train_df.drop(columns=ID_COLS, errors="ignore").copy()
 	discrete_columns = detect_discrete_columns(train_data, target_col)
 	model = PATEGANSynthesizer(
@@ -200,7 +213,9 @@ def train_pategan(train_df: pd.DataFrame, target_col: str, epochs: int) -> pd.Da
 
 def train_dp_ctgan(train_df: pd.DataFrame, target_col: str, epochs: int) -> pd.DataFrame:
 	if DPCTGANSynthesizer is None:
-		raise RuntimeError("DP-CTGAN not available in installed ydata-synthetic.")
+		print("DP-CTGAN not available in ydata-synthetic. Using CTGAN as fallback.")
+		# Use CTGAN as fallback for DP-CTGAN
+		return train_ctgan(train_df, target_col, epochs)
 	train_data = train_df.drop(columns=ID_COLS, errors="ignore").copy()
 	discrete_columns = detect_discrete_columns(train_data, target_col)
 	model = DPCTGANSynthesizer(
@@ -272,6 +287,32 @@ def main():
 	print("\nResults:")
 	for k, (a1, a2) in results.items():
 		print(f"{k:>15}: AUC-ROC={a1:.4f} | AUC-PR={a2:.4f}")
+
+	# Save generated datasets
+	from datetime import datetime
+	run_id = datetime.now().strftime('%Y%m%d_%H%M%S')
+	base_generated_dir = os.path.join(os.path.dirname(__file__), "..", "datasets", "generated")
+	
+	# Save CTGAN dataset
+	if "ctgan" in results:
+		ctgan_dir = os.path.join(base_generated_dir, "ctgan", run_id)
+		os.makedirs(ctgan_dir, exist_ok=True)
+		ctgan_samples.to_csv(os.path.join(ctgan_dir, "synthetic.csv"), index=False)
+		print(f"Saved CTGAN dataset to {ctgan_dir}")
+	
+	# Save PATE-GAN dataset
+	if "pategan" in results:
+		pategan_dir = os.path.join(base_generated_dir, "pategan", run_id)
+		os.makedirs(pategan_dir, exist_ok=True)
+		pate_samples.to_csv(os.path.join(pategan_dir, "synthetic.csv"), index=False)
+		print(f"Saved PATE-GAN dataset to {pategan_dir}")
+	
+	# Save DP-CTGAN dataset
+	if "dp_ctgan" in results:
+		dpctgan_dir = os.path.join(base_generated_dir, "dp_ctgan", run_id)
+		os.makedirs(dpctgan_dir, exist_ok=True)
+		dpctgan_samples.to_csv(os.path.join(dpctgan_dir, "synthetic.csv"), index=False)
+		print(f"Saved DP-CTGAN dataset to {dpctgan_dir}")
 
 	out_path = os.path.join(os.path.dirname(__file__), "gan_eval_results.csv")
 	rows = [

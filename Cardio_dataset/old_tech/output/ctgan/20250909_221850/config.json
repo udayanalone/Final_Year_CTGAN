@@ -1,0 +1,6 @@
+{
+  "data": "prebuilt_models/datasets/input/cardio_train_dataset.csv",
+  "epochs": 20,
+  "samples": 1000,
+  "categorical": []
+}
