@@ -69,8 +69,8 @@ def main(argv: Optional[List[str]] = None) -> int:
 	data_path = os.path.join(run_dir, 'synthetic.csv')
 	synthetic.to_csv(data_path, index=False)
 
-	# Also save anonymized dataset into Generated_dataset/ctgan/<timestamp>
-	generated_dir = os.path.join('Generated_dataset', 'ctgan', run_id)
+	# Also save anonymized dataset into datasets/generated/ctgan/<timestamp>
+	generated_dir = os.path.join('..', 'datasets', 'generated', 'ctgan', run_id)
 	ensure_dir(generated_dir)
 	generated_path = os.path.join(generated_dir, 'synthetic.csv')
 	synthetic.to_csv(generated_path, index=False)

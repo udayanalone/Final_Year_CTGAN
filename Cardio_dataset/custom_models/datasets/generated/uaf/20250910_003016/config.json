@@ -1,0 +1,17 @@
+{
+  "lambda_u": 1.0,
+  "steps_G_per_step_D": 1,
+  "predictor_steps_per_round": 15,
+  "batch_size": 256,
+  "epochs": 30,
+  "noise_dim": 64,
+  "smallset_M": 2048,
+  "lr": 0.0001,
+  "r1_gamma": 10.0,
+  "feat_match_weight": 0.8,
+  "predictor_minibatches": 24,
+  "predictor_warm_start": true,
+  "balanced_labels": true,
+  "input_csv": "custom_models\\datasets\\input\\cardio_train_dataset.csv",
+  "run_id": "20250910_003016"
+}

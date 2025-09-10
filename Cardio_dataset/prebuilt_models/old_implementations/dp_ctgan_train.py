@@ -16,12 +16,12 @@ def save_json(data, path: str) -> None:
 
 
 def parse_args(argv: Optional[List[str]] = None):
-    parser = argparse.ArgumentParser(description='Train PATE-CTGAN and generate synthetic data.')
+    parser = argparse.ArgumentParser(description='Train DP-CTGAN and generate synthetic data.')
     parser.add_argument('--data', type=str, required=True, help='Path to CSV dataset')
-    parser.add_argument('--output_dir', type=str, default=os.path.join('old_tech', 'output', 'pate_ctgan'))
+    parser.add_argument('--output_dir', type=str, default=os.path.join('old_tech', 'output', 'dp_ctgan'))
     parser.add_argument('--epochs', type=int, default=50)
     parser.add_argument('--samples', type=int, default=1000)
-    parser.add_argument('--teachers', type=int, default=10, help='Number of teacher models in PATE')
+    parser.add_argument('--epsilon', type=float, default=1.0, help='DP epsilon budget')
     parser.add_argument('--categorical', type=str, default='', help='Comma-separated categorical columns')
     return parser.parse_args(argv)
 
@@ -38,7 +38,7 @@ def main(argv: Optional[List[str]] = None) -> int:
         'data': args.data,
         'epochs': args.epochs,
         'samples': args.samples,
-        'teachers': args.teachers,
+        'epsilon': args.epsilon,
         'categorical': args.categorical.split(',') if args.categorical else []
     }, os.path.join(run_dir, 'config.json'))
 
@@ -48,13 +48,14 @@ def main(argv: Optional[List[str]] = None) -> int:
         from sdv.metadata import SingleTableMetadata
     except Exception as e:
         save_json({'status': 'failed', 'reason': f'Missing dependency or import error: {e}'}, os.path.join(run_dir, 'result.json'))
-        print('PATE-CTGAN dependencies missing. Install with: pip install sdv pandas', file=sys.stderr)
+        print('DP-CTGAN dependencies missing. Install with: pip install sdv pandas', file=sys.stderr)
         return 1
 
-    # Placeholder for PATE-CTGAN. Implement PATE mechanism or integrate a library if available.
+    # NOTE: This is a placeholder without DP guarantees.
     # Load data with delimiter auto-detection
     df = pd.read_csv(args.data, sep=None, engine='python')
 
+    # Build metadata for CTGANSynthesizer
     metadata = SingleTableMetadata()
     metadata.detect_from_dataframe(data=df)
 
@@ -66,8 +67,8 @@ def main(argv: Optional[List[str]] = None) -> int:
     data_path = os.path.join(run_dir, 'synthetic.csv')
     synthetic.to_csv(data_path, index=False)
 
-    # Also save anonymized dataset into Generated_dataset/pate_ctgan/<timestamp>
-    generated_dir = os.path.join('Generated_dataset', 'pate_ctgan', run_id)
+    # Also save anonymized dataset into datasets/generated/dp_ctgan/<timestamp>
+    generated_dir = os.path.join('..', 'datasets', 'generated', 'dp_ctgan', run_id)
     ensure_dir(generated_dir)
     generated_path = os.path.join(generated_dir, 'synthetic.csv')
     synthetic.to_csv(generated_path, index=False)
@@ -77,15 +78,15 @@ def main(argv: Optional[List[str]] = None) -> int:
         'num_synth_rows': int(len(synthetic)),
         'columns': list(df.columns),
         'run_id': run_id,
-        'model': 'PATE-CTGAN',
-        'teachers': args.teachers,
-        'note': 'This is a placeholder using CTGANSynthesizer without PATE guarantees.',
+        'model': 'DP-CTGAN',
+        'epsilon': args.epsilon,
+        'note': 'This is a placeholder using CTGANSynthesizer without DP guarantees.',
         'generated_dataset_path': generated_path
     }
     save_json(metrics, os.path.join(run_dir, 'metrics.json'))
     save_json({'status': 'success', 'run_dir': run_dir}, os.path.join(run_dir, 'result.json'))
 
-    print(f'PATE-CTGAN (placeholder) completed. Outputs saved to: {run_dir} and {generated_dir}')
+    print(f'DP-CTGAN (placeholder) completed. Outputs saved to: {run_dir} and {generated_dir}')
     return 0
 
 

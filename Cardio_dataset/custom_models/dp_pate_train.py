@@ -27,7 +27,7 @@ random.seed(RANDOM_STATE)
 torch.backends.cudnn.deterministic = True
 torch.backends.cudnn.benchmark = False
 
-CSV_PATH = os.path.join(os.path.dirname(__file__), "cardio_train_dataset.csv")
+CSV_PATH = os.path.join(os.path.dirname(__file__), "datasets", "input", "cardio_train_dataset.csv")
 TARGET_COL = "cardio"
 ID_COLS = ["id"]
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -337,11 +337,39 @@ def main():
 	results["pate_gan"] = (pg_auc_roc, pg_auc_pr)
 	print(f"PATE-GAN AUC-ROC: {pg_auc_roc:.4f} | AUC-PR: {pg_auc_pr:.4f}")
 
-	# Save
+	# Save generated datasets
+	from datetime import datetime
+	run_id = datetime.now().strftime('%Y%m%d_%H%M%S')
+	
+	# Save DP-GAN generated data
+	dp_gan_dir = os.path.join(os.path.dirname(__file__), "datasets", "generated", "dp_gan", run_id)
+	os.makedirs(dp_gan_dir, exist_ok=True)
+	
+	# Reconstruct DP-GAN dataset with original column names
+	pipe, _, _ = build_preprocessor(train_df, TARGET_COL, drop_cols)
+	X_train_orig, y_train_orig = transform_features(pipe, train_df, TARGET_COL, drop_cols)
+	
+	# Create synthetic DP-GAN dataset
+	dp_gan_data = pd.DataFrame(synth_dp, columns=[f"feature_{i}" for i in range(synth_dp.shape[1])])
+	dp_gan_data[TARGET_COL] = y_dp
+	dp_gan_data.to_csv(os.path.join(dp_gan_dir, "synthetic.csv"), index=False)
+	
+	# Save PATE-GAN generated data
+	pate_gan_dir = os.path.join(os.path.dirname(__file__), "datasets", "generated", "pate_gan", run_id)
+	os.makedirs(pate_gan_dir, exist_ok=True)
+	
+	# Create synthetic PATE-GAN dataset
+	pate_gan_data = pd.DataFrame(synth_pate, columns=[f"feature_{i}" for i in range(synth_pate.shape[1])])
+	pate_gan_data[TARGET_COL] = y_pate
+	pate_gan_data.to_csv(os.path.join(pate_gan_dir, "synthetic.csv"), index=False)
+	
+	# Save results
 	rows = [{"model": k, "auc_roc": v[0], "auc_pr": v[1]} for k, v in results.items()]
 	out_path = os.path.join(os.path.dirname(__file__), "custom_gan_eval_results.csv")
 	pd.DataFrame(rows).to_csv(out_path, index=False)
 	print(f"Saved results to {out_path}")
+	print(f"Saved DP-GAN dataset to {dp_gan_dir}")
+	print(f"Saved PATE-GAN dataset to {pate_gan_dir}")
 
 
 if __name__ == "__main__":
